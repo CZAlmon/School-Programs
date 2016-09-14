@@ -18,7 +18,7 @@ This repository is home to all programs created throughout the Computer Science 
   
 ### C
 
-*C Command Line WebServer
+* C Command Line WebServer
   * Program to handle GET Requests from a browser and send back the requested file. See project for more description.
 * My Cloud Server
   * My cloud Server and Clients to handle storage and management services. See project for more description.

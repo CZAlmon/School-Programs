@@ -2,12 +2,12 @@
 
 This repository is home to all programs created throughout the Computer Science Program at UK. 
 
-* [ASP.NET / Visual Basic](../[ASP.NET][VB]/)			
-* [C](../C/)									
-* [C++](../C++/)								
-* [JavaScript](../JavaScript/)						
-* [PHP](../PHP/)								
-* [Python](../Python/)							
+* [ASP.NET / Visual Basic](https://github.com/CZAlmon/School-Programs/tree/master/%5BASP.NET%5D%5BVB%5D/Card%20Game%20Web%20Page)			
+* [C](https://github.com/CZAlmon/School-Programs/tree/master/C)							
+* [C++](https://github.com/CZAlmon/School-Programs/tree/master/C%2B%2B)								
+* [JavaScript](https://github.com/CZAlmon/School-Programs/tree/master/JavaScript)						
+* [PHP](https://github.com/CZAlmon/School-Programs/tree/master/PHP)								
+* [Python](https://github.com/CZAlmon/School-Programs/tree/master/Python)							
 
 ---
 

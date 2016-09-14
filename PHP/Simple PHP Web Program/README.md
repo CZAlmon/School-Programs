@@ -24,4 +24,4 @@ The Javascript code does what processing it can before passing the request to th
 Opens a .csv file and reads in data about horse races and stats. When invoked by the javascript program, it will assume good data being sent to it, then try to find the information in the csv file. IT will do calculations and display something on the screen. If the race/track/date combination does not produce results (not in file) for any reason then it will display any and all errors from the given data (Bad race number, bad track number, bad date, etc etc). It will display every error on the returned HTML page. If something is found (a race matches with input) then the program will display a table with information from the csv file. 
 
 
-![Image of Workflow](https://octodex.github.com/images/Graphic.png)
+![Image of Workflow](https://github.com/CZAlmon/School-Programs/blob/master/PHP/Simple%20PHP%20Web%20Program/Graphic.png)

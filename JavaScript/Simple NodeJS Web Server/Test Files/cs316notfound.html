@@ -1,0 +1,71 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=utf-8">
+<body>
+<title>CS 316 Program 2 get request for a file that is not found</title>
+
+<script language="JavaScript">
+    // sendrequest
+    // When submit pressed, sendrequest is executed.
+    // It gets the port number from the screen port text box
+    // If the port number is:localhost:not_found   (NNNN=portnumber)
+    // The URL will be: http://localhost:NNNN/xxxx
+    // so that the request is sent to the local machine and the server can
+    // be debugged locally.
+    // Otherwise a URL is put together so that it is sent to the pen server on multilab
+    // to execute a get request.
+    // url then has this format:
+    // http:pen.cs.uky.edu:PORT/not_found.html
+    // The file not_found.html is not found on the server, 404 is returned
+    // See the Fall 2015 CS 316 Program 2 asignment.
+function sendrequest() {
+    // get port number from screen
+    var port = document.program2form.portnumber.value;
+    var file = "/not_found.html";		// not_found.html not found on server
+    var patt = /localhost/i;    // pattern if running locally
+    if (port.search(patt) < 0) {    // If not running locally send to pen on multilab
+        var pen = "http://pen.cs.uky.edu:";  	// send to pen server on multilab
+        multilabadr = pen + port + file;		// put URL together
+        // set action attribute of form to URL on server
+        document.getElementById("program2form").action = multilabadr;
+    } else {    // running local (localhost)
+        var loc = "http://";  	// send to localhost
+        multilabadr = loc + port + file;		// put URL together
+        document.getElementById("program2form").action = multilabadr;
+    }
+    document.program2form.submit();		// submit request
+} 
+
+</script>
+
+</head>
+	<BODY bgcolor="#99ccff">
+	    <h1>Executes get method for file that is not found when submitted</h1>
+		<FORM id="program2form" name="program2form" onSubmit="return sendrequest();" method="get">
+			<P align="center"><STRONG><FONT size="6">Customer Database Search<BR>
+			</P>
+			</FONT></STRONG>
+			<P><BR>
+				<BR>
+				<FONT size="4" face="arial">port: <INPUT type="text" name="portnumber" id="portnumber" value="">
+			</P>
+			<P>
+			radio button example:
+			<P>
+				<INPUT type="radio" name="option" value="number" checked>
+			Customer by customer number
+			<P>
+				<INPUT type="radio" name="option" value="name">
+			Customer by customer name
+			<P>
+				<INPUT type="radio" name="option" value="next"> Next customer 
+			</P>
+	
+			<INPUT type=hidden name=hiddenValue value="hidden value">
+			<INPUT type="submit" value="Submit" >
+			</FONT>
+		</FORM>
+		</P>
+	</BODY>
+</HTML>

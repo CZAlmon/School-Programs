@@ -1,0 +1,27 @@
+﻿EXTERNAL DOCUMENTATION
+CS315001 Spring 2015
+Project 1 Milestone 3
+
+
+A) PROBLEM SPECIFICATION:
+
+a) When given a seqeuence t = (t_1, t_2, ... t_n), for t_i within the set of natural numbers for 1 <= i <= n, finding the smallest d ∈ N such that t is d-smooth.
+b) When given a sequence t, find the smallest d value such that, when some number -d to d is added or subtracted to each element of t, the sequence t is strictly increasing. 
+
+B) SOLUTION
+
+a)use a binary search system to search for d-values within M, where M is the number of the sequence added up plus 50. This algorithm is O(log(M))
+b)when given a individual d-value loop over the sequence adjusting values to make them strictly increasing. Also adjust each value so that it is the smallest value it can be, where it is still bigger then the value before it. 
+c)b returns true or false, and the binary search system will remember the smallest true d-value.
+
+C) TESTING
+
+a)See the script.txt for tests run
+
+
+Purpose:
+- testing for correctness: prepare "difficult inputs" that test
+all potential cases and boundary conditions.
+- testing for measuring the number of comparisons between elements of
+the input sequence. The focus is on the worst case analysis.
+

@@ -1,0 +1,5 @@
+daily#Lunch##Home#11:30 - 12:30
+task#Study#for CS 215 and other classes#5#180
+weekly#CS 215#lecture#CP 155#9:30 - 10:45#2
+weekly#CS 215#lecture#CP 155#9:30 - 10:45#4
+weekly#CS 215#lab - section 001#RGAN 103#8:15 - 9:45#3

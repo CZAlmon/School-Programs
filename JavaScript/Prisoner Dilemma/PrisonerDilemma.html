@@ -1,0 +1,1796 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=utf-8">
+	<TITLE>Prisoner's Dilemma by Carmon Zachary Almon</TITLE>
+
+	<SCRIPT LANGUAGE="JavaScript">
+
+/* dilemmasample.html
+    Author: Carmon Zachary Almon czal222 10613596
+    Date: 9/14/15
+    Always provide program description in prolog
+
+
+        PRECONDITIONS:
+
+    When the page loads, all text boxes are initialized to zero.
+        
+        POSTCONDITIONS:
+
+    1) When a non total box is clicked in either the upper or lower tables,
+        1000 tests are run with the indicated strategies and my total score is
+        filled in the clicked box with the total column incremented by that value.
+    2) When the "Run All" button is pushed, all sets of 1000 tests are run,
+        all boxes are updated with their respective scores, and all the total boxes
+        are updated with the sum for that row.
+    3) When the "Reset" button is pushed, all boxes are reset to their initial
+        state of 0.
+
+        IMPLEMENTATION:
+
+    The program simulates the Prisoner's Dilema.  Experiments are run in
+        multiples of 1000 using different strategies between the two prisoners.
+    The strategies include all combinations of the following:
+        - Always cooperate
+            ( Cooperate: "C" )
+        - Always defect
+            ( Defect: "D" )
+        - Randomly cooperate or defect with a 50 percent probability of either
+            ( Random: "R" )
+        - Decide on cooperation or defection based on my history and the
+            opponent's history
+            ( My plan: "M" )
+    The top table calulates the total of 1000 tries for each combination of strategies with no limitations.  
+    The lower table calculates the total of 1000 tests with the following constraints:
+            - Neither I nor my opponent may exceed 600 defections or cooperations
+            - For each defect over 500, 1 point is deducted from my score
+    
+*/    
+
+/*       
+    run function:
+    Run a simulation based on strategy based on input
+
+    Passed parameters:
+        strategy1: The first strategy will always be my choice, can be R, C, D, or M
+        strategy2: The second strategy will always be thier choice, can be R, C, D, or M
+
+    Description:
+        declare all variables to zero or empty string
+        Loop 100 times:
+            16 if statements to check the different combinations of strategys.
+            in each if statement, do work, like get the Random choice or the myplan choice
+            update the histories and the defect's for myplan (the defects are only needed for the myplan statements)
+            update score based on the choices, either hard coded, random's, or mychoice
+        update the screen, the individual box given by the strategys and the total box by adding up all 4 boxes.
+        reset variables to zero or empty string
+
+*/
+ function run( strategy1, strategy2)
+  { 
+     // history variables used for this run
+     var myhistory = "";    // history of your selections:
+                            // string of "C" and "D"
+     var ophistory = "";    // history of opponent selections
+     var mydefect = 0;      // my number of defect selections
+     var opdefect = 0;      // opponent number of defect selections
+     var myscore = 0;       // calculated score for 1000 runs
+     var count = 0;         // loop count
+	 
+     for (count=1; count <= 1000; count++) {   	// for 1000 tries
+        // Select based on choices (what textbox clicked)
+        
+		//R Choices <---------------------------------------------------------------------------------------------->
+		
+		if (strategy1 == "R" && strategy2 == "R") {   // Random Random
+			
+			var my_choice = my_random_return();
+			var their_choice = my_random_return();
+			
+			myhistory = myhistory.concat(my_choice);  		// add to histories
+			ophistory = ophistory.concat(their_choice);
+		    
+			if (my_choice == "C" && their_choice == "C")  {
+				myscore = myscore + 3;		// C C gets 3 points
+			}
+			else if (my_choice == "C" && their_choice == "D")  {
+				myscore = myscore + 0;		// C D gets 0 points
+			}
+			else if (my_choice == "D" && their_choice == "C")  {
+				myscore = myscore + 5;		// D C gets 5 points
+			}
+			else if (my_choice == "D" && their_choice == "D")  {
+				myscore = myscore + 1;		// D D gets 1 point
+			}
+			
+		}
+		else if (strategy1 == "R" && strategy2 == "C") {   // Random cooperate
+			
+			var my_choice = my_random_return();
+			
+			myhistory = myhistory.concat(my_choice);  		// add to histories
+		    ophistory = ophistory.concat("C"); 
+		    
+			//Thier Choice will always be C
+			if (my_choice == "C")  {
+				myscore = myscore + 3;		// C C gets 3 points
+			}
+			else if (my_choice == "D")  {
+				myscore = myscore + 5;		// D C gets 5 points
+			}
+			
+		
+		}
+		else if (strategy1 == "R" && strategy2 == "D") {   // Random Defect
+		
+			var my_choice = my_random_return();
+			
+			myhistory = myhistory.concat(my_choice);  		// add to histories
+			ophistory = ophistory.concat("D");
+		    
+			//Thier Choice will always be D
+			if (my_choice == "C")  {
+				myscore = myscore + 0;		// C D gets 0 points
+			}
+			else if (my_choice == "D")  {
+				myscore = myscore + 1;		// D D gets 1 point
+			}
+		
+		}
+		else if (strategy1 == "R" && strategy2 == "M") {   // Random myplan
+			
+			var my_choice = my_random_return();
+			var their_choice = myplan(count, ophistory, myhistory, opdefect, mydefect);// get their result (what to do C or D)
+
+			if (their_choice == "D") {
+			    opdefect = opdefect + 1;
+			}
+			if (my_choice == "D"){
+			    mydefect = mydefect + 1;
+			}
+
+			
+			myhistory = myhistory.concat(my_choice);  		// add to histories
+			ophistory = ophistory.concat(their_choice);    //  concatenate to ophistory then replace ophistory
+		    
+			if (my_choice == "C" && their_choice == "C")  {
+				myscore = myscore + 3;		// C C gets 3 points
+			}
+			else if (my_choice == "C" && their_choice == "D")  {
+				myscore = myscore + 0;		// C D gets 0 points
+			}
+			else if (my_choice == "D" && their_choice == "C")  {
+				myscore = myscore + 5;		// D C gets 5 points
+			}
+			else if (my_choice == "D" && their_choice == "D")  {
+				myscore = myscore + 1;		// D D gets 1 point
+			}
+			
+		
+		}
+		
+		
+		//C Choices <---------------------------------------------------------------------------------------------->
+
+		else if (strategy1 == "C" && strategy2 == "R") {   // cooperate Random
+			
+			var their_choice = my_random_return();
+			
+			myhistory = myhistory.concat("C");  		// add to histories
+		    ophistory = ophistory.concat(their_choice); 
+		    
+			//My Choice will always be C
+			if (their_choice == "C")  {
+				myscore = myscore + 3;		// C C gets 3 points
+			}
+			else if (their_choice == "D")  {
+				myscore = myscore + 0;		// C D gets 0 points
+			}
+		
+		}
+		else if (strategy1 == "C" && strategy2 == "C") {   // cooperate cooperate
+          myhistory = myhistory.concat("C");  		// add to histories
+          ophistory = ophistory.concat("C"); 
+          myscore = myscore + 3;		// C C gets 3 points
+        } 
+		else if (strategy1 == "C" && strategy2 == "D") {   // cooperate Defect
+          myhistory = myhistory.concat("C");  		// add to histories
+          ophistory = ophistory.concat("D"); 
+          myscore = myscore + 0;		// C D gets 0 points
+        } 
+		else if (strategy1 == "C" && strategy2 == "M") {   // cooperate myplan
+			
+	        var their_choice = myplan(count, ophistory, myhistory, opdefect, mydefect);// get their result (what to do C or D)
+
+	        if (their_choice == "D") {
+		        opdefect = opdefect + 1;
+	        }
+            //Always C
+	        //if (my_choice == "D") {
+		    //    mydefect = mydefect + 1;
+	        //}
+		  
+	        myhistory = myhistory.concat("C");  		// add to histories
+	        ophistory = ophistory.concat(their_choice);    //  concatenateD  to ophistory then replace ophistory
+		  
+	        if (their_choice == "C")  {
+	        myscore = myscore + 3;		// C C gets 3 points
+	        }
+	        else if (their_choice == "D")  {
+	        myscore = myscore + 0;		// C D gets 0 points
+	        }
+			
+        } 
+		
+		
+		//D Choices <---------------------------------------------------------------------------------------------->
+		
+		else if (strategy1 == "D" && strategy2 == "R") {   // defect Random
+			
+			var their_choice = my_random_return();
+			
+			myhistory = myhistory.concat("D");  		// add to histories
+		    ophistory = ophistory.concat(their_choice); 
+		    
+			//My Choice will always be D
+			if (their_choice == "C")  {
+				myscore = myscore + 5;		// D C gets 5 points
+			}
+			else if (their_choice == "D")  {
+				myscore = myscore + 1;		// D D gets 1 point
+			}
+		
+		}
+		else if (strategy1 == "D" && strategy2 == "C") {  // defect Cooperate
+          myhistory = myhistory.concat("D");  	//  concatenate D to myhistory then replace myhistory
+          ophistory = ophistory.concat("C");    //  concatenateD  to ophistory then replace ophistory
+          myscore = myscore + 5;		// get 5 points for D C
+        } 
+		else if (strategy1 == "D" && strategy2 == "D") {  // defect defect
+          myhistory = myhistory.concat("D");  	//  concatenate D to myhistory then replace myhistory
+          ophistory = ophistory.concat("D");    //  concatenateD  to ophistory then replace ophistory
+          myscore = myscore + 1;		// get 1 point for D D
+        } 
+		else if (strategy1 == "D" && strategy2 == "M") {   // defect myplan
+			
+			var their_choice = myplan(count,ophistory,myhistory,opdefect,mydefect);// get their result (what to do C or D)
+			
+			if (their_choice == "D") {
+			    opdefect = opdefect + 1;
+			}
+			//Always D
+			mydefect = mydefect + 1;
+			
+			myhistory = myhistory.concat("D");  		// add to histories
+			ophistory = ophistory.concat(their_choice);    //  concatenateD  to ophistory then replace ophistory
+		    
+			if (their_choice == "C")  {
+				myscore = myscore + 5;		// D C gets 5 points
+			}
+			else if (their_choice == "D")  {
+				myscore = myscore + 1;		// D D gets 1 point
+			}
+		}
+		
+		
+		//M Choices <---------------------------------------------------------------------------------------------->
+		
+		
+		else if (strategy1 == "M" && strategy2 == "R") {   // myplan Random
+			
+			var their_choice = my_random_return();
+		
+		    ophistory = ophistory.concat(their_choice); 
+			
+		    my_choice = myplan(count, myhistory, ophistory, mydefect, opdefect);// get my result (what to do C or D)
+
+            myhistory = myhistory.concat(my_choice)
+
+		    if (their_choice == "D") {
+		        opdefect = opdefect + 1;
+		    }
+		    if (my_choice == "D") {
+		        mydefect = mydefect + 1;
+		    }
+		    
+			if (my_choice == "C" && their_choice == "C")  {
+				myscore = myscore + 3;		// C C gets 3 points
+			}
+			else if (my_choice == "C" && their_choice == "D")  {
+				myscore = myscore + 0;		// C D gets 0 points
+			}
+			else if (my_choice == "D" && their_choice == "C")  {
+				myscore = myscore + 5;		// D C gets 5 points
+			}
+			else if (my_choice == "D" && their_choice == "D")  {
+				myscore = myscore + 1;		// D D gets 1 point
+			}
+		
+		}
+		else if (strategy1 == "M" && strategy2 == "C") {   // myplan Cooperate
+			
+		  ophistory = ophistory.concat("C");   //  concatenate D to ophistory then replace ophistory
+		  my_choice = myplan(count, myhistory, ophistory, mydefect, opdefect);// get my result (what to do C or D)
+
+		  myhistory = myhistory.concat(my_choice);
+
+		  if (their_choice == "D") {
+		      opdefect = opdefect + 1;
+		  }
+		  if (my_choice == "D") {
+		      mydefect = mydefect + 1;
+		  }
+
+		  if (my_choice == "D") {			// if D
+             myscore = myscore + 5;		// D C gets 5 point
+          }
+          else  {				
+			 myscore = myscore + 3;		// C C gets 3 points
+		  }
+		  
+		}
+		else if (strategy1 == "M" && strategy2 == "D") { // myplan  defect
+
+          ophistory = ophistory.concat("D");   //  concatenate D to ophistory then replace ophistory
+          my_choice = myplan(count, myhistory, ophistory, mydefect, opdefect);// get my result (what to do C or D)
+          myhistory = myhistory.concat(my_choice);
+
+          if (their_choice == "D") {
+              opdefect = opdefect + 1;
+          }
+          if (my_choice == "D") {
+              mydefect = mydefect + 1;
+          }
+
+          if (my_choice == "D") {			// if D
+             myscore = myscore + 1;		// D D gets 1 point
+          }
+          else  {				
+			 myscore = myscore + 0;		// C D gets 0 points
+          }
+
+		}
+		else if (strategy1 == "M" && strategy2 == "M") {   // myplan myplan
+		    
+		    var my_choice = myplan(count, myhistory, ophistory, mydefect, opdefect); // get my result (what to do C or D)
+		    var their_choice = myplan(count, ophistory, myhistory, opdefect, mydefect); // get their result (what to do C or D)
+
+		    if (their_choice == "D") {
+		        opdefect = opdefect + 1;
+		    }
+		    if (my_choice == "D") {
+		        mydefect = mydefect + 1;
+		    }
+
+		    myhistory = myhistory.concat(my_choice);
+		    ophistory = myhistory.concat(their_choice);
+
+		    if (my_choice == "C" && their_choice == "C") {
+		        myscore = myscore + 3;		// C C gets 3 points
+		    }
+		    else if (my_choice == "C" && their_choice == "D") {
+		        myscore = myscore + 0;		// C D gets 0 points
+		    }
+		    else if (my_choice == "D" && their_choice == "C") {
+		        myscore = myscore + 5;		// D C gets 5 points
+		    }
+		    else if (my_choice == "D" && their_choice == "D") {
+		        myscore = myscore + 1;		// D D gets 1 point
+		    }
+
+
+		}
+    
+    } // end for loop
+
+    // Example of updating the screen 
+    document.forms["PDForm"].elements[strategy1+strategy2].value = myscore; // Updates the Clicked Box
+	//Updates Totals
+	document.PDForm.R1.value = (parseInt(document.PDForm.RR.value) + parseInt(document.PDForm.RC.value) + parseInt(document.PDForm.RD.value) + parseInt(document.PDForm.RM.value)); 
+    document.PDForm.C1.value = (parseInt(document.PDForm.CR.value) + parseInt(document.PDForm.CC.value) + parseInt(document.PDForm.CD.value) + parseInt(document.PDForm.CM.value)); 
+    document.PDForm.D1.value = (parseInt(document.PDForm.DR.value) + parseInt(document.PDForm.DC.value) + parseInt(document.PDForm.DD.value) + parseInt(document.PDForm.DM.value)); 
+    document.PDForm.M1.value = (parseInt(document.PDForm.MR.value) + parseInt(document.PDForm.MC.value) + parseInt(document.PDForm.MD.value) + parseInt(document.PDForm.MM.value));
+	
+	
+    // end of run reset history variables used for this run
+    myhistory = "";    // history of your selections
+    ophistory = "";    // history of opponent selections
+    mydefect = 0;      // my number of defect selections
+    opdefect = 0;      // opponent number of defect selections
+    myscore = 0;
+
+  } // end run
+
+
+/*       
+    run1 function:
+    Run a adjusted simulation based on strategy based on input/adjusted for limits on input
+
+    Passed parameters:
+        strategy1: The first strategy will always be my choice, can be R, C, D, or M
+        strategy2: The second strategy will always be thier choice, can be R, C, D, or M
+
+    Description:
+        declare all variables to zero or empty string
+        Loop 100 times:
+            16 if statements to check the different combinations of strategys.
+            in each if statement, do work, like get the Random choice or the myplan choice
+            check the amount of C's or D's used by players (kept in a variable) and change if needed (Max of 600, if at 600 the change to the other)
+            update the history for this adjustment then-
+            update the histories and the defect's for myplan
+            update score based on the choices, either hard coded, random's, or mychoice
+        Adjust the score based on the choices, if C's or D's are over 500, the subtract 1 point for each overage 
+        update the screen, the individual box given by the strategys and the total box by adding up all 4 boxes.
+        reset variables to zero or empty string
+
+*/
+ function run1( strategy1, strategy2)
+ // Provide code for run1
+ { 
+     // history variables used for this run
+     var myhistory = "";    // history of your selections:
+     // string of "C" and "D"
+     var ophistory = "";    // history of opponent selections
+     var mydefect = 0;      // my number of defect selections
+     var opdefect = 0;      // opponent number of defect selections
+     var myscore = 0;       // calculated score for 1000 runs
+     var count = 0;         // loop count
+
+     var my_D_count = 0;
+     var my_C_count = 0;
+
+     var their_D_count = 0;
+     var their_C_count = 0;
+	 
+     for (count = 1; count <= 1000; count++) {   	// for 1000 tries
+         // Select based on choices (what textbox clicked)
+
+         //R Choices <---------------------------------------------------------------------------------------------->
+
+        if (strategy1 == "R" && strategy2 == "R") {   // Random Random
+
+            var my_choice = my_random_return();
+            var their_choice = my_random_return();
+
+            //MY ADJUSTMENT <-------------------------------->
+            if (my_choice == "D") {
+                if (my_D_count >= 600) {
+                    //Reverse Choice 
+                    my_choice = "C";
+                    //Add one to C_count
+                    my_C_count = my_C_count + 1;
+                }
+                else { my_D_count = my_D_count + 1; }
+            }
+            else if (my_choice == "C") {
+                if (my_C_count >= 600) {
+                    //Reverse Choice 
+                    my_choice = "D";
+                    //Add one to D_count
+                    my_D_count = my_D_count + 1;
+                }
+                else { my_C_count = my_C_count + 1; }
+            }
+            //OPPONENTS ADJUSTMENT <-------------------------------->
+            if (their_choice == "D") {
+                if (their_D_count >= 600) {
+                    //Reverse Choice 
+                    their_choice = "C";
+                    //Add one to C_count
+                    their_C_count = their_C_count + 1;
+                }
+                else { their_D_count = their_D_count + 1; }
+            }
+            else if (their_choice == "C") {
+                if (their_C_count >= 600) {
+                    //Reverse Choice 
+                    their_choice = "D";
+                    //Add one to D_count
+                    their_D_count = their_D_count + 1;
+                }
+                else { their_C_count = their_C_count + 1; }
+            }
+            //END ADJUSTMENT <--------------------------------------->
+
+            myhistory = myhistory.concat(my_choice);  		// add to histories
+            ophistory = ophistory.concat(their_choice);
+
+            if (my_choice == "C" && their_choice == "C") {
+                myscore = myscore + 3;		// C C gets 3 points
+            }
+            else if (my_choice == "C" && their_choice == "D") {
+                myscore = myscore + 0;		// C D gets 0 points
+            }
+            else if (my_choice == "D" && their_choice == "C") {
+                myscore = myscore + 5;		// D C gets 5 points
+            }
+            else if (my_choice == "D" && their_choice == "D") {
+                myscore = myscore + 1;		// D D gets 1 point
+            }
+
+        }
+        else if (strategy1 == "R" && strategy2 == "C") {   // Random cooperate
+
+            var my_choice = my_random_return();
+            var their_choice = "C";
+
+            //MY ADJUSTMENT <-------------------------------->
+            if (my_choice == "D") {
+                if (my_D_count >= 600) {
+                    //Reverse Choice 
+                    my_choice = "C";
+                    //Add one to C_count
+                    my_C_count = my_C_count + 1;
+                }
+                else { my_D_count = my_D_count + 1; }
+            }
+            else if (my_choice == "C") {
+                if (my_C_count >= 600) {
+                    //Reverse Choice 
+                    my_choice = "D";
+                    //Add one to D_count
+                    my_D_count = my_D_count + 1;
+                }
+                else { my_C_count = my_C_count + 1; }
+            }
+            //OPPONENTS ADJUSTMENT <-------------------------------->
+            if (their_choice == "D") {
+                if (their_D_count >= 600) {
+                    //Reverse Choice 
+                    their_choice = "C";
+                    //Add one to C_count
+                    their_C_count = their_C_count + 1;
+                }
+                else { their_D_count = their_D_count + 1; }
+            }
+            else if (their_choice == "C") {
+                if (their_C_count >= 600) {
+                    //Reverse Choice 
+                    their_choice = "D";
+                    //Add one to D_count
+                    their_D_count = their_D_count + 1;
+                }
+                else { their_C_count = their_C_count + 1; }
+            }
+            //END ADJUSTMENT <--------------------------------------->
+
+            myhistory = myhistory.concat(my_choice);  		// add to histories
+            ophistory = ophistory.concat(their_choice);
+
+            if (my_choice == "C" && their_choice == "C") {
+                myscore = myscore + 3;		// C C gets 3 points
+            }
+            else if (my_choice == "C" && their_choice == "D") {
+                myscore = myscore + 0;		// C D gets 0 points
+            }
+            else if (my_choice == "D" && their_choice == "C") {
+                myscore = myscore + 5;		// D C gets 5 points
+            }
+            else if (my_choice == "D" && their_choice == "D") {
+                myscore = myscore + 1;		// D D gets 1 point
+            }
+
+        }
+        else if (strategy1 == "R" && strategy2 == "D") {   // Random Defect
+
+            var my_choice = my_random_return();
+            var their_choice = "D";
+
+            //MY ADJUSTMENT <-------------------------------->
+            if (my_choice == "D") {
+                if (my_D_count >= 600) {
+                    //Reverse Choice 
+                    my_choice = "C";
+                    //Add one to C_count
+                    my_C_count = my_C_count + 1;
+                }
+                else { my_D_count = my_D_count + 1; }
+            }
+            else if (my_choice == "C") {
+                if (my_C_count >= 600) {
+                    //Reverse Choice 
+                    my_choice = "D";
+                    //Add one to D_count
+                    my_D_count = my_D_count + 1;
+                }
+                else { my_C_count = my_C_count + 1; }
+            }
+            //OPPONENTS ADJUSTMENT <-------------------------------->
+            if (their_choice == "D") {
+                if (their_D_count >= 600) {
+                    //Reverse Choice 
+                    their_choice = "C";
+                    //Add one to C_count
+                    their_C_count = their_C_count + 1;
+                }
+                else { their_D_count = their_D_count + 1; }
+            }
+            else if (their_choice == "C") {
+                if (their_C_count >= 600) {
+                    //Reverse Choice 
+                    their_choice = "D";
+                    //Add one to D_count
+                    their_D_count = their_D_count + 1;
+                }
+                else { their_C_count = their_C_count + 1; }
+            }
+            //END ADJUSTMENT <--------------------------------------->
+
+            myhistory = myhistory.concat(my_choice);  		// add to histories
+            ophistory = ophistory.concat(their_choice);
+
+            if (my_choice == "C" && their_choice == "C") {
+                myscore = myscore + 3;		// C C gets 3 points
+            }
+            else if (my_choice == "C" && their_choice == "D") {
+                myscore = myscore + 0;		// C D gets 0 points
+            }
+            else if (my_choice == "D" && their_choice == "C") {
+                myscore = myscore + 5;		// D C gets 5 points
+            }
+            else if (my_choice == "D" && their_choice == "D") {
+                myscore = myscore + 1;		// D D gets 1 point
+            }
+
+        }
+        else if (strategy1 == "R" && strategy2 == "M") {   // Random myplan
+			
+			opdefect = their_D_count;
+			mydefect = my_D_count;			
+			
+            var my_choice = my_random_return();
+            var their_choice = myplan(count, ophistory, myhistory, opdefect, mydefect);// get their result (what to do C or D)
+
+            //MY ADJUSTMENT <-------------------------------->
+            if (my_choice == "D") {
+                if (my_D_count >= 600) {
+                    //Reverse Choice 
+                    my_choice = "C";
+                    //Add one to C_count
+                    my_C_count = my_C_count + 1;
+                }
+                else { my_D_count = my_D_count + 1; }
+            }
+            else if (my_choice == "C") {
+                if (my_C_count >= 600) {
+                    //Reverse Choice 
+                    my_choice = "D";
+                    //Add one to D_count
+                    my_D_count = my_D_count + 1;
+                }
+                else { my_C_count = my_C_count + 1; }
+            }
+            //OPPONENTS ADJUSTMENT <-------------------------------->
+            if (their_choice == "D") {
+                if (their_D_count >= 600) {
+                    //Reverse Choice 
+                    their_choice = "C";
+                    //Add one to C_count
+                    their_C_count = their_C_count + 1;
+                }
+                else { their_D_count = their_D_count + 1; }
+            }
+            else if (their_choice == "C") {
+                if (their_C_count >= 600) {
+                    //Reverse Choice 
+                    their_choice = "D";
+                    //Add one to D_count
+                    their_D_count = their_D_count + 1;
+                }
+                else { their_C_count = their_C_count + 1; }
+            }
+            //END ADJUSTMENT <--------------------------------------->
+
+            //ophistory = ophistory.substring(0, ophistory.length() - 1);
+            //REMOVE MYPLAN HISTORY -1
+            myhistory = myhistory.concat(my_choice);  		// add to histories
+            ophistory = ophistory.concat(their_choice);
+
+            if (my_choice == "C" && their_choice == "C") {
+                myscore = myscore + 3;		// C C gets 3 points
+            }
+            else if (my_choice == "C" && their_choice == "D") {
+                myscore = myscore + 0;		// C D gets 0 points
+            }
+            else if (my_choice == "D" && their_choice == "C") {
+                myscore = myscore + 5;		// D C gets 5 points
+            }
+            else if (my_choice == "D" && their_choice == "D") {
+                myscore = myscore + 1;		// D D gets 1 point
+            }
+
+        }
+
+         //C Choices <---------------------------------------------------------------------------------------------->
+
+        else if (strategy1 == "C" && strategy2 == "R") {   // Random Random
+
+            var my_choice = "C";
+            var their_choice = my_random_return();
+
+            //MY ADJUSTMENT <-------------------------------->
+            if (my_choice == "D") {
+                if (my_D_count >= 600) {
+                    //Reverse Choice 
+                    my_choice = "C";
+                    //Add one to C_count
+                    my_C_count = my_C_count + 1;
+                }
+                else { my_D_count = my_D_count + 1; }
+            }
+            else if (my_choice == "C") {
+                if (my_C_count >= 600) {
+                    //Reverse Choice 
+                    my_choice = "D";
+                    //Add one to D_count
+                    my_D_count = my_D_count + 1;
+                }
+                else { my_C_count = my_C_count + 1; }
+            }
+            //OPPONENTS ADJUSTMENT <-------------------------------->
+            if (their_choice == "D") {
+                if (their_D_count >= 600) {
+                    //Reverse Choice 
+                    their_choice = "C";
+                    //Add one to C_count
+                    their_C_count = their_C_count + 1;
+                }
+                else { their_D_count = their_D_count + 1; }
+            }
+            else if (their_choice == "C") {
+                if (their_C_count >= 600) {
+                    //Reverse Choice 
+                    their_choice = "D";
+                    //Add one to D_count
+                    their_D_count = their_D_count + 1;
+                }
+                else { their_C_count = their_C_count + 1; }
+            }
+            //END ADJUSTMENT <--------------------------------------->
+
+            myhistory = myhistory.concat(my_choice);  		// add to histories
+            ophistory = ophistory.concat(their_choice);
+
+            if (my_choice == "C" && their_choice == "C") {
+                myscore = myscore + 3;		// C C gets 3 points
+            }
+            else if (my_choice == "C" && their_choice == "D") {
+                myscore = myscore + 0;		// C D gets 0 points
+            }
+            else if (my_choice == "D" && their_choice == "C") {
+                myscore = myscore + 5;		// D C gets 5 points
+            }
+            else if (my_choice == "D" && their_choice == "D") {
+                myscore = myscore + 1;		// D D gets 1 point
+            }
+
+        }
+        else if (strategy1 == "C" && strategy2 == "C") {   // Random cooperate
+
+            var my_choice = "C";
+            var their_choice = "C";
+
+            //MY ADJUSTMENT <-------------------------------->
+            if (my_choice == "D") {
+                if (my_D_count >= 600) {
+                    //Reverse Choice 
+                    my_choice = "C";
+                    //Add one to C_count
+                    my_C_count = my_C_count + 1;
+                }
+                else { my_D_count = my_D_count + 1; }
+            }
+            else if (my_choice == "C") {
+                if (my_C_count >= 600) {
+                    //Reverse Choice 
+                    my_choice = "D";
+                    //Add one to D_count
+                    my_D_count = my_D_count + 1;
+                }
+                else { my_C_count = my_C_count + 1; }
+            }
+            //OPPONENTS ADJUSTMENT <-------------------------------->
+            if (their_choice == "D") {
+                if (their_D_count >= 600) {
+                    //Reverse Choice 
+                    their_choice = "C";
+                    //Add one to C_count
+                    their_C_count = their_C_count + 1;
+                }
+                else { their_D_count = their_D_count + 1; }
+            }
+            else if (their_choice == "C") {
+                if (their_C_count >= 600) {
+                    //Reverse Choice 
+                    their_choice = "D";
+                    //Add one to D_count
+                    their_D_count = their_D_count + 1;
+                }
+                else { their_C_count = their_C_count + 1; }
+            }
+            //END ADJUSTMENT <--------------------------------------->
+
+            myhistory = myhistory.concat(my_choice);  		// add to histories
+            ophistory = ophistory.concat(their_choice);
+
+            if (my_choice == "C" && their_choice == "C") {
+                myscore = myscore + 3;		// C C gets 3 points
+            }
+            else if (my_choice == "C" && their_choice == "D") {
+                myscore = myscore + 0;		// C D gets 0 points
+            }
+            else if (my_choice == "D" && their_choice == "C") {
+                myscore = myscore + 5;		// D C gets 5 points
+            }
+            else if (my_choice == "D" && their_choice == "D") {
+                myscore = myscore + 1;		// D D gets 1 point
+            }
+
+        }
+        else if (strategy1 == "C" && strategy2 == "D") {   // Random Defect
+
+            var my_choice = "C";
+            var their_choice = "D";
+
+            //MY ADJUSTMENT <-------------------------------->
+            if (my_choice == "D") {
+                if (my_D_count >= 600) {
+                    //Reverse Choice 
+                    my_choice = "C";
+                    //Add one to C_count
+                    my_C_count = my_C_count + 1;
+                }
+                else { my_D_count = my_D_count + 1; }
+            }
+            else if (my_choice == "C") {
+                if (my_C_count >= 600) {
+                    //Reverse Choice 
+                    my_choice = "D";
+                    //Add one to D_count
+                    my_D_count = my_D_count + 1;
+                }
+                else { my_C_count = my_C_count + 1; }
+            }
+            //OPPONENTS ADJUSTMENT <-------------------------------->
+            if (their_choice == "D") {
+                if (their_D_count >= 600) {
+                    //Reverse Choice 
+                    their_choice = "C";
+                    //Add one to C_count
+                    their_C_count = their_C_count + 1;
+                }
+                else { their_D_count = their_D_count + 1; }
+            }
+            else if (their_choice == "C") {
+                if (their_C_count >= 600) {
+                    //Reverse Choice 
+                    their_choice = "D";
+                    //Add one to D_count
+                    their_D_count = their_D_count + 1;
+                }
+                else { their_C_count = their_C_count + 1; }
+            }
+            //END ADJUSTMENT <--------------------------------------->
+
+            myhistory = myhistory.concat(my_choice);  		// add to histories
+            ophistory = ophistory.concat(their_choice);
+
+            if (my_choice == "C" && their_choice == "C") {
+                myscore = myscore + 3;		// C C gets 3 points
+            }
+            else if (my_choice == "C" && their_choice == "D") {
+                myscore = myscore + 0;		// C D gets 0 points
+            }
+            else if (my_choice == "D" && their_choice == "C") {
+                myscore = myscore + 5;		// D C gets 5 points
+            }
+            else if (my_choice == "D" && their_choice == "D") {
+                myscore = myscore + 1;		// D D gets 1 point
+            }
+
+        }
+        else if (strategy1 == "C" && strategy2 == "M") {   // Random myplan
+		
+			opdefect = their_D_count;
+			mydefect = my_D_count;	
+
+            var my_choice = "C";
+            var their_choice = myplan(count, ophistory, myhistory, opdefect, mydefect);// get their result (what to do C or D)
+
+            //MY ADJUSTMENT <-------------------------------->
+            if (my_choice == "D") {
+                if (my_D_count >= 600) {
+                    //Reverse Choice 
+                    my_choice = "C";
+                    //Add one to C_count
+                    my_C_count = my_C_count + 1;
+                }
+                else { my_D_count = my_D_count + 1; }
+            }
+            else if (my_choice == "C") {
+                if (my_C_count >= 600) {
+                    //Reverse Choice 
+                    my_choice = "D";
+                    //Add one to D_count
+                    my_D_count = my_D_count + 1;
+                }
+                else { my_C_count = my_C_count + 1; }
+            }
+            //OPPONENTS ADJUSTMENT <-------------------------------->
+            if (their_choice == "D") {
+                if (their_D_count >= 600) {
+                    //Reverse Choice 
+                    their_choice = "C";
+                    //Add one to C_count
+                    their_C_count = their_C_count + 1;
+                }
+                else { their_D_count = their_D_count + 1; }
+            }
+            else if (their_choice == "C") {
+                if (their_C_count >= 600) {
+                    //Reverse Choice 
+                    their_choice = "D";
+                    //Add one to D_count
+                    their_D_count = their_D_count + 1;
+                }
+                else { their_C_count = their_C_count + 1; }
+            }
+            //END ADJUSTMENT <--------------------------------------->
+
+            //ophistory = ophistory.substring(0, ophistory.length() - 1);
+            //REMOVE MYPLAN HISTORY -1
+            myhistory = myhistory.concat(my_choice);  		// add to histories
+            ophistory = ophistory.concat(their_choice);
+
+            if (my_choice == "C" && their_choice == "C") {
+                myscore = myscore + 3;		// C C gets 3 points
+            }
+            else if (my_choice == "C" && their_choice == "D") {
+                myscore = myscore + 0;		// C D gets 0 points
+            }
+            else if (my_choice == "D" && their_choice == "C") {
+                myscore = myscore + 5;		// D C gets 5 points
+            }
+            else if (my_choice == "D" && their_choice == "D") {
+                myscore = myscore + 1;		// D D gets 1 point
+            }
+
+        }
+
+         //D Choices <---------------------------------------------------------------------------------------------->
+
+        else if (strategy1 == "D" && strategy2 == "R") {   // Random Random
+
+            var my_choice = "D";
+            var their_choice = my_random_return();
+
+            //MY ADJUSTMENT <-------------------------------->
+            if (my_choice == "D") {
+                if (my_D_count >= 600) {
+                    //Reverse Choice 
+                    my_choice = "C";
+                    //Add one to C_count
+                    my_C_count = my_C_count + 1;
+                }
+                else { my_D_count = my_D_count + 1; }
+            }
+            else if (my_choice == "C") {
+                if (my_C_count >= 600) {
+                    //Reverse Choice 
+                    my_choice = "D";
+                    //Add one to D_count
+                    my_D_count = my_D_count + 1;
+                }
+                else { my_C_count = my_C_count + 1; }
+            }
+            //OPPONENTS ADJUSTMENT <-------------------------------->
+            if (their_choice == "D") {
+                if (their_D_count >= 600) {
+                    //Reverse Choice 
+                    their_choice = "C";
+                    //Add one to C_count
+                    their_C_count = their_C_count + 1;
+                }
+                else { their_D_count = their_D_count + 1; }
+            }
+            else if (their_choice == "C") {
+                if (their_C_count >= 600) {
+                    //Reverse Choice 
+                    their_choice = "D";
+                    //Add one to D_count
+                    their_D_count = their_D_count + 1;
+                }
+                else { their_C_count = their_C_count + 1; }
+            }
+            //END ADJUSTMENT <--------------------------------------->
+
+            myhistory = myhistory.concat(my_choice);  		// add to histories
+            ophistory = ophistory.concat(their_choice);
+
+            if (my_choice == "C" && their_choice == "C") {
+                myscore = myscore + 3;		// C C gets 3 points
+            }
+            else if (my_choice == "C" && their_choice == "D") {
+                myscore = myscore + 0;		// C D gets 0 points
+            }
+            else if (my_choice == "D" && their_choice == "C") {
+                myscore = myscore + 5;		// D C gets 5 points
+            }
+            else if (my_choice == "D" && their_choice == "D") {
+                myscore = myscore + 1;		// D D gets 1 point
+            }
+
+
+        }
+        else if (strategy1 == "D" && strategy2 == "C") {   // Random cooperate
+
+            var my_choice = "D";
+            var their_choice = "C";
+
+            //MY ADJUSTMENT <-------------------------------->
+            if (my_choice == "D") {
+                if (my_D_count >= 600) {
+                    //Reverse Choice 
+                    my_choice = "C";
+                    //Add one to C_count
+                    my_C_count = my_C_count + 1;
+                }
+                else { my_D_count = my_D_count + 1; }
+            }
+            else if (my_choice == "C") {
+                if (my_C_count >= 600) {
+                    //Reverse Choice 
+                    my_choice = "D";
+                    //Add one to D_count
+                    my_D_count = my_D_count + 1;
+                }
+                else { my_C_count = my_C_count + 1; }
+            }
+            //OPPONENTS ADJUSTMENT <-------------------------------->
+            if (their_choice == "D") {
+                if (their_D_count >= 600) {
+                    //Reverse Choice 
+                    their_choice = "C";
+                    //Add one to C_count
+                    their_C_count = their_C_count + 1;
+                }
+                else { their_D_count = their_D_count + 1; }
+            }
+            else if (their_choice == "C") {
+                if (their_C_count >= 600) {
+                    //Reverse Choice 
+                    their_choice = "D";
+                    //Add one to D_count
+                    their_D_count = their_D_count + 1;
+                }
+                else { their_C_count = their_C_count + 1; }
+            }
+            //END ADJUSTMENT <--------------------------------------->
+
+            myhistory = myhistory.concat(my_choice);  		// add to histories
+            ophistory = ophistory.concat(their_choice);
+
+            if (my_choice == "C" && their_choice == "C") {
+                myscore = myscore + 3;		// C C gets 3 points
+            }
+            else if (my_choice == "C" && their_choice == "D") {
+                myscore = myscore + 0;		// C D gets 0 points
+            }
+            else if (my_choice == "D" && their_choice == "C") {
+                myscore = myscore + 5;		// D C gets 5 points
+            }
+            else if (my_choice == "D" && their_choice == "D") {
+                myscore = myscore + 1;		// D D gets 1 point
+            }
+
+        }
+        else if (strategy1 == "D" && strategy2 == "D") {   // Random Defect
+
+            var my_choice = "D";
+            var their_choice = "D";
+
+            //MY ADJUSTMENT <-------------------------------->
+            if (my_choice == "D") {
+                if (my_D_count >= 600) {
+                    //Reverse Choice 
+                    my_choice = "C";
+                    //Add one to C_count
+                    my_C_count = my_C_count + 1;
+                }
+                else { my_D_count = my_D_count + 1; }
+            }
+            else if (my_choice == "C") {
+                if (my_C_count >= 600) {
+                    //Reverse Choice 
+                    my_choice = "D";
+                    //Add one to D_count
+                    my_D_count = my_D_count + 1;
+                }
+                else { my_C_count = my_C_count + 1; }
+            }
+            //OPPONENTS ADJUSTMENT <-------------------------------->
+            if (their_choice == "D") {
+                if (their_D_count >= 600) {
+                    //Reverse Choice 
+                    their_choice = "C";
+                    //Add one to C_count
+                    their_C_count = their_C_count + 1;
+                }
+                else { their_D_count = their_D_count + 1; }
+            }
+            else if (their_choice == "C") {
+                if (their_C_count >= 600) {
+                    //Reverse Choice 
+                    their_choice = "D";
+                    //Add one to D_count
+                    their_D_count = their_D_count + 1;
+                }
+                else { their_C_count = their_C_count + 1; }
+            }
+            //END ADJUSTMENT <--------------------------------------->
+
+            myhistory = myhistory.concat(my_choice);  		// add to histories
+            ophistory = ophistory.concat(their_choice);
+
+            if (my_choice == "C" && their_choice == "C") {
+                myscore = myscore + 3;		// C C gets 3 points
+            }
+            else if (my_choice == "C" && their_choice == "D") {
+                myscore = myscore + 0;		// C D gets 0 points
+            }
+            else if (my_choice == "D" && their_choice == "C") {
+                myscore = myscore + 5;		// D C gets 5 points
+            }
+            else if (my_choice == "D" && their_choice == "D") {
+                myscore = myscore + 1;		// D D gets 1 point
+            }
+
+        }
+        else if (strategy1 == "D" && strategy2 == "M") {   // Random myplan
+		
+			opdefect = their_D_count;
+			mydefect = my_D_count;	
+
+            var my_choice = "D";
+            var their_choice = myplan(count, ophistory, myhistory, opdefect, mydefect);// get their result (what to do C or D)
+
+            //MY ADJUSTMENT <-------------------------------->
+            if (my_choice == "D") {
+                if (my_D_count >= 600) {
+                    //Reverse Choice 
+                    my_choice = "C";
+                    //Add one to C_count
+                    my_C_count = my_C_count + 1;
+                }
+                else { my_D_count = my_D_count + 1; }
+            }
+            else if (my_choice == "C") {
+                if (my_C_count >= 600) {
+                    //Reverse Choice 
+                    my_choice = "D";
+                    //Add one to D_count
+                    my_D_count = my_D_count + 1;
+                }
+                else { my_C_count = my_C_count + 1; }
+            }
+            //OPPONENTS ADJUSTMENT <-------------------------------->
+            if (their_choice == "D") {
+                if (their_D_count >= 600) {
+                    //Reverse Choice 
+                    their_choice = "C";
+                    //Add one to C_count
+                    their_C_count = their_C_count + 1;
+                }
+                else { their_D_count = their_D_count + 1; }
+            }
+            else if (their_choice == "C") {
+                if (their_C_count >= 600) {
+                    //Reverse Choice 
+                    their_choice = "D";
+                    //Add one to D_count
+                    their_D_count = their_D_count + 1;
+                }
+                else { their_C_count = their_C_count + 1; }
+            }
+            //END ADJUSTMENT <--------------------------------------->
+
+            //ophistory = ophistory.substring(0, ophistory.length() - 1);
+            //REMOVE MYPLAN HISTORY -1
+            myhistory = myhistory.concat(my_choice);  		// add to histories
+            ophistory = ophistory.concat(their_choice);
+
+            if (my_choice == "C" && their_choice == "C") {
+                myscore = myscore + 3;		// C C gets 3 points
+            }
+            else if (my_choice == "C" && their_choice == "D") {
+                myscore = myscore + 0;		// C D gets 0 points
+            }
+            else if (my_choice == "D" && their_choice == "C") {
+                myscore = myscore + 5;		// D C gets 5 points
+            }
+            else if (my_choice == "D" && their_choice == "D") {
+                myscore = myscore + 1;		// D D gets 1 point
+            }
+
+        }
+
+         //M Choices <---------------------------------------------------------------------------------------------->
+
+        else if (strategy1 == "M" && strategy2 == "R") {   // Random Random
+		
+			opdefect = their_D_count;
+			mydefect = my_D_count;	
+
+            var my_choice = myplan(count, myhistory, ophistory, mydefect, opdefect); // get my result (what to do C or D)
+            var their_choice = my_random_return(); // get their result (what to do C or D)
+
+            //MY ADJUSTMENT <-------------------------------->
+            if (my_choice == "D") {
+                if (my_D_count >= 600) {
+                    //Reverse Choice 
+                    my_choice = "C";
+                    //Add one to C_count
+                    my_C_count = my_C_count + 1;
+                }
+                else { my_D_count = my_D_count + 1; }
+            }
+            else if (my_choice == "C") {
+                if (my_C_count >= 600) {
+                    //Reverse Choice 
+                    my_choice = "D";
+                    //Add one to D_count
+                    my_D_count = my_D_count + 1;
+                }
+                else { my_C_count = my_C_count + 1; }
+            }
+            //OPPONENTS ADJUSTMENT <-------------------------------->
+            if (their_choice == "D") {
+                if (their_D_count >= 600) {
+                    //Reverse Choice 
+                    their_choice = "C";
+                    //Add one to C_count
+                    their_C_count = their_C_count + 1;
+                }
+                else { their_D_count = their_D_count + 1; }
+            }
+            else if (their_choice == "C") {
+                if (their_C_count >= 600) {
+                    //Reverse Choice 
+                    their_choice = "D";
+                    //Add one to D_count
+                    their_D_count = their_D_count + 1;
+                }
+                else { their_C_count = their_C_count + 1; }
+            }
+            //END ADJUSTMENT <--------------------------------------->
+
+            //myhistory = myhistory.substring(0, myhistory.length() - 1);
+            //REMOVE MYPLAN HISTORY -1
+            myhistory = myhistory.concat(my_choice);  		// add to histories
+            ophistory = ophistory.concat(their_choice);
+
+
+            if (my_choice == "C" && their_choice == "C") {
+                myscore = myscore + 3;		// C C gets 3 points
+            }
+            else if (my_choice == "C" && their_choice == "D") {
+                myscore = myscore + 0;		// C D gets 0 points
+            }
+            else if (my_choice == "D" && their_choice == "C") {
+                myscore = myscore + 5;		// D C gets 5 points
+            }
+            else if (my_choice == "D" && their_choice == "D") {
+                myscore = myscore + 1;		// D D gets 1 point
+            }
+
+        }
+        else if (strategy1 == "M" && strategy2 == "C") {   // Random cooperate
+		
+			opdefect = their_D_count;
+			mydefect = my_D_count;	
+
+            var my_choice = myplan(count, myhistory, ophistory, mydefect, opdefect); // get my result (what to do C or D)
+            var their_choice = "C"; // get their result (what to do C or D)
+
+            //MY ADJUSTMENT <-------------------------------->
+            if (my_choice == "D") {
+                if (my_D_count >= 600) {
+                    //Reverse Choice 
+                    my_choice = "C";
+                    //Add one to C_count
+                    my_C_count = my_C_count + 1;
+                }
+                else { my_D_count = my_D_count + 1; }
+            }
+            else if (my_choice == "C") {
+                if (my_C_count >= 600) {
+                    //Reverse Choice 
+                    my_choice = "D";
+                    //Add one to D_count
+                    my_D_count = my_D_count + 1;
+                }
+                else { my_C_count = my_C_count + 1; }
+            }
+            //OPPONENTS ADJUSTMENT <-------------------------------->
+            if (their_choice == "D") {
+                if (their_D_count >= 600) {
+                    //Reverse Choice 
+                    their_choice = "C";
+                    //Add one to C_count
+                    their_C_count = their_C_count + 1;
+                }
+                else { their_D_count = their_D_count + 1; }
+            }
+            else if (their_choice == "C") {
+                if (their_C_count >= 600) {
+                    //Reverse Choice 
+                    their_choice = "D";
+                    //Add one to D_count
+                    their_D_count = their_D_count + 1;
+                }
+                else { their_C_count = their_C_count + 1; }
+            }
+            //END ADJUSTMENT <--------------------------------------->
+
+            //myhistory = myhistory.substring(0, myhistory.length() - 1);
+            //REMOVE MYPLAN HISTORY -1
+            myhistory = myhistory.concat(my_choice);  		// add to histories
+            ophistory = ophistory.concat(their_choice);
+
+
+            if (my_choice == "C" && their_choice == "C") {
+                myscore = myscore + 3;		// C C gets 3 points
+            }
+            else if (my_choice == "C" && their_choice == "D") {
+                myscore = myscore + 0;		// C D gets 0 points
+            }
+            else if (my_choice == "D" && their_choice == "C") {
+                myscore = myscore + 5;		// D C gets 5 points
+            }
+            else if (my_choice == "D" && their_choice == "D") {
+                myscore = myscore + 1;		// D D gets 1 point
+            }
+
+
+        }
+        else if (strategy1 == "M" && strategy2 == "D") {   // Random Defect
+		
+			opdefect = their_D_count;
+			mydefect = my_D_count;	
+
+            var my_choice = myplan(count, myhistory, ophistory, mydefect, opdefect); // get my result (what to do C or D)
+            var their_choice = "D"; // get their result (what to do C or D)
+
+            //MY ADJUSTMENT <-------------------------------->
+            if (my_choice == "D") {
+                if (my_D_count >= 600) {
+                    //Reverse Choice 
+                    my_choice = "C";
+                    //Add one to C_count
+                    my_C_count = my_C_count + 1;
+                }
+                else { my_D_count = my_D_count + 1; }
+            }
+            else if (my_choice == "C") {
+                if (my_C_count >= 600) {
+                    //Reverse Choice 
+                    my_choice = "D";
+                    //Add one to D_count
+                    my_D_count = my_D_count + 1;
+                }
+                else { my_C_count = my_C_count + 1; }
+            }
+            //OPPONENTS ADJUSTMENT <-------------------------------->
+            if (their_choice == "D") {
+                if (their_D_count >= 600) {
+                    //Reverse Choice 
+                    their_choice = "C";
+                    //Add one to C_count
+                    their_C_count = their_C_count + 1;
+                }
+                else { their_D_count = their_D_count + 1; }
+            }
+            else if (their_choice == "C") {
+                if (their_C_count >= 600) {
+                    //Reverse Choice 
+                    their_choice = "D";
+                    //Add one to D_count
+                    their_D_count = their_D_count + 1;
+                }
+                else { their_C_count = their_C_count + 1; }
+            }
+            //END ADJUSTMENT <--------------------------------------->
+
+            //myhistory = myhistory.substring(0, myhistory.length() - 1);
+            //REMOVE MYPLAN HISTORY -1
+            myhistory = myhistory.concat(my_choice);  		// add to histories
+            ophistory = ophistory.concat(their_choice);
+
+
+            if (my_choice == "C" && their_choice == "C") {
+                myscore = myscore + 3;		// C C gets 3 points
+            }
+            else if (my_choice == "C" && their_choice == "D") {
+                myscore = myscore + 0;		// C D gets 0 points
+            }
+            else if (my_choice == "D" && their_choice == "C") {
+                myscore = myscore + 5;		// D C gets 5 points
+            }
+            else if (my_choice == "D" && their_choice == "D") {
+                myscore = myscore + 1;		// D D gets 1 point
+            }
+
+
+        }
+        else if (strategy1 == "M" && strategy2 == "M") {   // Random myplan
+		
+			opdefect = their_D_count;
+			mydefect = my_D_count;	
+
+            var my_choice = myplan(count, myhistory, ophistory, mydefect, opdefect); // get my result (what to do C or D)
+            var their_choice = myplan(count, ophistory, myhistory, opdefect, mydefect); // get my result (what to do C or D)
+
+            //MY ADJUSTMENT <-------------------------------->
+            if (my_choice == "D") {
+                if (my_D_count >= 600) {
+                    //Reverse Choice 
+                    my_choice = "C";
+                    //Add one to C_count
+                    my_C_count = my_C_count + 1;
+                }
+                else { my_D_count = my_D_count + 1; }
+            }
+            else if (my_choice == "C") {
+                if (my_C_count >= 600) {
+                    //Reverse Choice 
+                    my_choice = "D";
+                    //Add one to D_count
+                    my_D_count = my_D_count + 1;
+                }
+                else { my_C_count = my_C_count + 1; }
+            }
+            //OPPONENTS ADJUSTMENT <-------------------------------->
+            if (their_choice == "D") {
+                if (their_D_count >= 600) {
+                    //Reverse Choice 
+                    their_choice = "C";
+                    //Add one to C_count
+                    their_C_count = their_C_count + 1;
+                }
+                else { their_D_count = their_D_count + 1; }
+            }
+            else if (their_choice == "C") {
+                if (their_C_count >= 600) {
+                    //Reverse Choice 
+                    their_choice = "D";
+                    //Add one to D_count
+                    their_D_count = their_D_count + 1;
+                }
+                else { their_C_count = their_C_count + 1; }
+            }
+            //END ADJUSTMENT <--------------------------------------->
+
+            //myhistory = myhistory.substring(0, myhistory.length() - 1);
+            //ophistory = ophistory.substring(0, ophistory.length() - 1);
+            //REMOVE MYPLAN HISTORY -1
+            myhistory = myhistory.concat(my_choice);  		// add to histories
+            ophistory = ophistory.concat(their_choice);
+
+            if (my_choice == "C" && their_choice == "C") {
+                myscore = myscore + 3;		// C C gets 3 points
+            }
+            else if (my_choice == "C" && their_choice == "D") {
+                myscore = myscore + 0;		// C D gets 0 points
+            }
+            else if (my_choice == "D" && their_choice == "C") {
+                myscore = myscore + 5;		// D C gets 5 points
+            }
+            else if (my_choice == "D" && their_choice == "D") {
+                myscore = myscore + 1;		// D D gets 1 point
+            }
+
+
+        }
+
+     }
+    
+
+
+     //Score Adjustment
+     if (my_D_count > 500) {
+         myscore = myscore - (my_D_count - 500);
+     }
+     else if (my_C_count > 500) {
+         myscore = myscore - (my_C_count - 500);
+     }
+
+
+     // Example of updating the screen 
+     document.forms["PDForm"].elements[strategy1 + strategy2 + 'C'].value = myscore; // Updates the Clicked Box
+	 document.PDForm.R1C.value = (parseInt(document.PDForm.RRC.value) + parseInt(document.PDForm.RCC.value) + parseInt(document.PDForm.RDC.value) + parseInt(document.PDForm.RMC.value)); 
+     document.PDForm.C1C.value = (parseInt(document.PDForm.CRC.value) + parseInt(document.PDForm.CCC.value) + parseInt(document.PDForm.CDC.value) + parseInt(document.PDForm.CMC.value)); 
+     document.PDForm.D1C.value = (parseInt(document.PDForm.DRC.value) + parseInt(document.PDForm.DCC.value) + parseInt(document.PDForm.DDC.value) + parseInt(document.PDForm.DMC.value)); 
+     document.PDForm.M1C.value = (parseInt(document.PDForm.MRC.value) + parseInt(document.PDForm.MCC.value) + parseInt(document.PDForm.MDC.value) + parseInt(document.PDForm.MMC.value));
+
+     // end of run reset history variables used for this run
+    myhistory = "";    // history of your selections
+    ophistory = "";    // history of opponent selections
+    mydefect = 0;      // my number of defect selections
+    opdefect = 0;      // opponent number of defect selections
+    myscore = 0;
+
+     //Make Sure globals are set to zero
+    my_D_count = 0;
+    my_C_count = 0;
+
+    their_D_count = 0;
+    their_C_count = 0;
+
+	
+ } // end run1
+
+  
+/*
+    myplan
+    Select choice for my plan
+
+    Passed parameters:
+        count: number of runs including this run
+        myhistory: my history up until this run.
+            Note: This may actually be ophistory if you are
+                selecting a strategy for your opponent, for 
+                example, if "my plan"  vs. "my plan"
+                column box is clicked. Your opponent is running
+                "myplan"
+        mydefect: Number of defects ("D"s) in myhistory     
+            Note: From instructor's function, not used here. 
+                Did not change it in case I did eventually use it
+        ophistory: the opponent history 
+        opdefect: Number of defects ("D"s) in ophistory
+        
+        Returns
+        "C" for cooperate, "D" for defect
+
+    Description:
+        first 5 calls, always return C
+        After the first 5 times, if the opponent has defected more than half the times
+            then defect until they start to cooperate more
+        When the opponent has cooperated more than half the time than:
+            check the last 5 of the ophistory and keep a track of how many defects
+            if they have defected 4 or 5 times in the past 5 turns, than defect, otherwise cooperate.
+        return the choice
+
+    This algorithm is a forgiving algorithm and is also largly based on the intial choices.
+        I have seen where if the random generator gives more defects, this algorithm capitalizes on that 
+            (If the Opponent has chosen D greater than or equal to the count/2 than the algorithm always defects)
+*/
+ function myplan(count, myhistory, ophistory, mydefect, opdefect) {
+
+    var mychoice = ""
+    
+    //Start Innocent
+    if (count <= 5) {
+        mychoice = "C";
+    }
+        //If OPPONENTS have Defected less then half the time check the last 5 games, 
+        //if they defected more then 3 times, defect. Else Cooperate.
+    else if ((count / 2) > opdefect) {
+
+        var index = 0;
+        var recent_defect = 0;
+        for (index = 1; index <= 5; index++) {
+            if (ophistory.charAt(count - index) == "D") {
+                recent_defect = recent_defect + 1;
+            }
+        }
+
+        if (recent_defect > 3) {
+            mychoice = "D";
+        }
+        else {
+            mychoice = "C";
+        }
+
+    }
+    else if ((count / 2) <= opdefect) {
+        mychoice = "D"
+    }
+
+
+    return mychoice
+}
+
+        /*
+            resetAll
+            Zero all boxes and global variables (There are none)
+        */
+  function resetAll()  {
+  //  Zero all boxes
+  //  Zero global variables
+    document.forms["PDForm"].reset();  //  resets all boxes
+  
+  }
+
+/*
+        runAll
+        run every box/strategy combination and update the screen
+
+        No Passed Parameters
+
+        Description:
+            Simply call run and run1 with all strategy combinations
+            each call handles updating the screen and everything else.
+*/
+  function runAll()  {
+  //  provide code for runAll
+  
+	run('R','R');
+	run('R','C');
+	run('R','D');
+	run('R','M');
+	run('C','R');
+	run('C','C');
+	run('C','D');
+	run('C','M');
+	run('D','R');
+	run('D','C');
+	run('D','D');
+	run('D','M');
+	run('M','R');
+	run('M','C');
+	run('M','D');
+	run('M','M');
+	run1('R','R');
+	run1('R','C');
+	run1('R','D');
+	run1('R','M');
+	run1('C','R');
+	run1('C','C');
+	run1('C','D');
+	run1('C','M');
+	run1('D','R');
+	run1('D','C');
+	run1('D','D');
+	run1('D','M');
+	run1('M','R');
+	run1('M','C');
+	run1('M','D');
+	run1('M','M');
+	
+
+  }
+  
+
+/*
+    my_random_return
+    randomly return C or D using math functions
+
+    No passed parameters
+
+    Get a random number, multiply it by 100, add 1, floor it and then perform modulus to see if 0 or 1
+    if 1 return C, otherwise D
+
+*/
+ function my_random_return()   {
+	
+	var x = Math.floor((Math.random() * 100) + 1);
+	
+	var my_value = x % 2;
+	
+	if (my_value == 1) {
+		return "C";
+	}
+	else{
+		return "D"
+	}
+  
+  }
+
+</script>
+</head><body>
+<center>
+<h2> Prisoner's Dilemma by Carmon Zachary Almon</h2>
+Click on a box to run the simulation 1000 times 
+
+
+
+<form name="PDForm">
+<table>
+<tbody><tr> <th> Strategy
+     </th><th> Random
+     </th><th> Cooperate
+     </th><th> Defect
+     </th><th> My plan
+     </th><th> Total
+ 
+</th></tr>
+<tr> <td>Random</td>
+     <td> <input name="RR" size="5" value="0" onclick="run('R','R');" type="text">
+     </td><td> <input name="RC" size="5" value="0" onclick="run('R','C');" type="text">
+     </td><td> <input name="RD" size="5" value="0" onclick="run('R','D');" type="text">
+     </td><td> <input name="RM" size="5" value="0" onclick="run('R','M');" type="text">
+     </td><td> <input name="R1" size="5" value="0"  type="text">
+
+</td></tr>
+<tr> <td>Cooperate</td>
+     <td> <input name="CR" size="5" value="0" onclick="run('C','R');" type="text">
+     </td><td> <input name="CC" size="5" value="0" onclick="run('C','C');" type="text">
+     </td><td> <input name="CD" size="5" value="0" onclick="run('C','D');" type="text">
+     </td><td> <input name="CM" size="5" value="0" onclick="run('C','M');" type="text">
+     </td><td> <input name="C1" size="5" value="0"  type="text">
+
+</td></tr>
+     
+<tr> <td>Defect</td>
+     <td> <input name="DR" size="5" value="0" onclick="run('D','R');" type="text">
+     </td><td> <input name="DC" size="5" value="0" onclick="run('D','C');" type="text">
+     </td><td> <input name="DD" size="5" value="0" onclick="run('D','D');" type="text">
+     </td><td> <input name="DM" size="5" value="0" onclick="run('D','M');" type="text">
+     </td><td> <input name="D1" size="5" value="0"  type="text">
+
+</td></tr><tr> <td>My plan</td>
+     <td> <input name="MR" size="5" value="0" onclick="run('M','R');" type="text">
+     </td><td> <input name="MC" size="5" value="0" onclick="run('M','C');" type="text">
+     </td><td> <input name="MD" size="5" value="0" onclick="run('M','D');" type="text">
+     </td><td> <input name="MM" size="5" value="0" onclick="run('M','M');" type="text">
+     </td><td> <input name="M1" size="5" value="0"  type="text">
+
+</td></tr>
+
+</tbody></table>
+Scores after adjustments
+<table>
+<tbody><tr> <th> Strategy
+     </th><th> Random
+     </th><th> Cooperate
+     </th><th> Defect
+     </th><th> My plan
+     </th><th> Total
+ 
+</th></tr>
+<tr> <td>Random</td>
+     <td> <input name="RRC" size="5" value="0" onclick="run1('R','R');" type="text">
+     </td><td> <input name="RCC" size="5" value="0" onclick="run1('R','C');" type="text">
+     </td><td> <input name="RDC" size="5" value="0" onclick="run1('R','D');" type="text">
+     </td><td> <input name="RMC" size="5" value="0" onclick="run1('R','M');" type="text">
+     </td><td> <input name="R1C" size="5" value="0"  type="text">
+
+</td></tr>
+<tr> <td>Cooperate</td>
+     <td> <input name="CRC" size="5" value="0" onclick="run1('C','R');" type="text">
+     </td><td> <input name="CCC" size="5" value="0" onclick="run1('C','C');"  type="text">
+     </td><td> <input name="CDC" size="5" value="0" onclick="run1('C','D');" type="text">
+     </td><td> <input name="CMC" size="5" value="0" onclick="run1('C','M');" type="text">
+     </td><td> <input name="C1C" size="5" value="0"  type="text">
+
+</td></tr>
+     
+<tr> <td>Defect</td>
+     <td> <input name="DRC" size="5" value="0" onclick="run1('D','R');" type="text">
+     </td><td> <input name="DCC" size="5" value="0" onclick="run1('D','C');" type="text">
+     </td><td> <input name="DDC" size="5" value="0" onclick="run1('D','D');" type="text">
+     </td><td> <input name="DMC" size="5" value="0" onclick="run1('D','M');" type="text">
+     </td><td> <input name="D1C" size="5" value="0"  type="text">
+
+</td></tr><tr> <td>My plan</td>
+     <td> <input name="MRC" size="5" value="0" onclick="run1('M','R');" type="text">
+     </td><td> <input name="MCC" size="5" value="0" onclick="run1('M','C');" type="text">
+     </td><td> <input name="MDC" size="5" value="0" onclick="run1('M','D');" type="text">
+     </td><td> <input name="MMC" size="5" value="0" onclick="run1('M','M');" type="text">
+     </td><td> <input name="M1C" size="5" value="0"  type="text">
+
+</td></tr>
+
+</tbody></table>
+<br>
+
+
+
+<input value="Reset" onclick="resetAll();" type="button">
+<input value="Run All" onclick="runAll();" type="button">
+</form></center>
+
+
+
+</body></html>

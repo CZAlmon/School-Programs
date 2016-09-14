@@ -1,0 +1,131 @@
+Analysis.txt
+
+Algorithm Description:
+
+	There is a loop to read in numbers.
+	
+	There is a call to sort the vector of N elements.
+	
+	There is a loop to loop once over the N elements of the vector.
+	
+	Each loop there is a call to a binary search function to find if the value y, which equals M-x (where x is the vector indexed at current loop iterator 'i'), is in the vector.
+	
+	The binary search function takes the vector and searches over the index number, not the vector values.
+	
+	The algorithm indexes the vector at the current binary search value to check if it equals y.
+	
+	Returns true if the value is in the vector, and is not the same index as the for loop from before, or if it is, there is a duplicate number above or below the index value.
+
+	Returns false for any and every other check and if the search reaches the end of the binary search.
+
+
+Time Count:
+	
+	When "time ./tester.sh" is run with a.out compiled from Source2.cpp it takes just over 18 minutes and 45 seconds to run.
+	I don't know why it takes over 18 minutes to run when the runtime should be O(nlogn)
+	
+	
+A) PROBLEM SPECIFICATION:
+	a) find a given M, M-1 or M-2 in that order where M is 2 elements added together from a given N element sequence, 
+		where 2 <= M <= 2,000,000,002, 1 >= N >= 1,000,000, and the elements 1 >= i >= 1,000,000,000
+	
+	b) When given a number N and N elements and a value M, find 2 elements that add together to make M, M-1, or M-2 in that order of preference. Find the faster way to preform these tasks.
+	
+	
+	
+	
+B) SOLUTION
+
+	1. There is a loop to read in numbers.
+	
+	2. There is a call to sort the vector of N elements.
+	
+	3. There is a loop to loop once over the N elements of the vector.
+	
+	4. Each loop there is a call to a binary search function to find if the value y, which equals M-x (where x is the vector indexed at current loop iterator 'i'), is in the vector.
+	
+	5. The binary search function takes the vector and searches over the index number, not the vector values.
+	
+	6. The algorithm indexes the vector at the current binary search value to check if it equals y.
+	
+	7. Returns true if the value is in the vector, and is not the same index as the for loop from before, or if it is, there is a duplicate number above or below the index value.
+
+	8. Returns false for any and every other check and if the search reaches the end of the binary search.
+
+	
+	Algorithm Theoretical run time: O(nlogn)
+
+
+
+C) TESTING
+Purpose:
+	-Test bounds of N, i (elements), M
+	-Test if there is no 2 numbers to add to M, M-1, M-2
+	-Test if there is one single element, k = M/2, such that the program may try to give you k + k = M 
+		[Elements may not be used twice]
+	-Test 1,000,000 elements for time constraint
+	-Test for 2 elements of same value to add together
+	-Test upper and lower bounds of M 
+		[Such as M=2, where 2 elements equal 1, and M=2,000,000,002, where 2 elements equal 1,000,000]
+	-Test single inputs (If N = 1, output "NO")
+
+
+ADDITIONAL NOTES:
+
+	Besides the faster program with the binary_search function given by #include <algorithm> [See Extra notes for explanation]
+	
+	**This change happened after I ran out of time to implement and see if it was faster**
+	
+	I thought of a big faster way to implement my binary search algorithm to see if it will shave minutes off the run time.
+	It goes like this:
+	
+	At the point where you check to see if the number is found in the vector, also check to see if M-1 or M-2 is found.
+	
+	If it has return the number found, if it is never found return 0.
+	
+	In the loop, instead of each loop calling my_binary_search 3 times, it will call once and return the number it found. 
+	
+	The main program will check if this is M, M-1, or M-2 and appropriate steps will be taken from here.
+	
+	If 0 is returned then none of those were found. 0 can be returned because no element N can be less than 1.
+	
+	This would make big changes to both my main function and my_binary_search because I would have to make sure 
+	M is not in the vector if M-1, or M-2 is found, or M-1 is not in the vector if M-2 is found.
+	
+	Like I stated, I don't know if this will make it faster, or how much faster it would make the program.
+	It is just another method I thought of after it was too late to change.
+	
+	
+	
+***************************************************
+
+Extra Notes:
+
+	
+	Time Count:
+	
+	When "time ./tester.sh" is run with a.out compiled from Source2.cpp it takes just over 18 minutes and 45 seconds to run.
+	I don't know why it takes over 18 minutes to run when the runtime should be O(nlogn)
+	
+	I think it may be because I run the binary search 3 seperate times per loop, and each binary search 
+	has to find the number its looking for or completely search through the vector.
+									An example here would be in6.
+									1,000,000 elements. 
+									This would mean that each binary search would run 20 times
+										(Except for the few times it may find a matching number before the end of the search)
+	
+	
+	***************************************************************************************************************
+	But I have another program that is a bit better but I don't think it was appropriate to use:
+		It runs the exact same but in the main for loop instead of calling my_binary_search()
+		It runs the binary search from the algorithm header. The <algorithm> include.
+		
+		It runs from: binary_search(MySequence_test.begin(), MySequence_test.end(), y)
+		
+		Where MySequence_test is the vector to preform the search over to find y. It starts at the
+		iterator given by .begin() and ends at the iterator .end()
+		
+		This program has an actual run time of about 10 seconds for the same ./tester.sh
+		I made my own binary search function because I thought using a binary search function from a header
+		would be considered "not my own work" or cheating in a sense.
+

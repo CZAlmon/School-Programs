@@ -1,0 +1,25 @@
+CS315-001 Spring 2015
+A set of tests for pa1: d-smooth sequences
+
+INCLUDED FILES
+--- tests (the name includes the expected output)
+test2.in
+test4.in
+test5.in
+test7.in
+test16.in
+test19.in
+test45.in
+test95.in
+test103.in
+test192.in
+test371.in
+
+--- shell script to test your program a.out on the above tests
+tester.sh
+
+To test your program  place all the tests, tester.sh and a.out in the same directory
+chmod 755 tester.sh
+chmod 755 a.out
+./tester.sh
+

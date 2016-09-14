@@ -1,0 +1,190 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8">
+	<title>The xxxxx Race Track Data Access Program</title>
+	<meta name="generator" content="LibreOffice 4.2.8.2 (Linux)">
+	<meta name="created" content="0;0">
+	<meta name="changed" content="0;0">
+	<script language="JavaScript">
+// program3.html
+// Author: Carmon Zachary Almon
+// Date: 10-18-2015
+// Purpose:
+	//	Get data from form data, parse it and make sure the data is good and correct
+	//	Updated data to the way the php file needs it and submit it to the php file
+	//		If data is not correct in any way, alert the user and do not submit the form
+// Preconditions:
+	//	The server must be established. The user provides data to the web page in the form of textboxes.
+	//
+// Postconditions:
+	//	If the submitted data contains invalid values, an error alert box is displayed to the user reporting the first error caught. 
+	//  If the data is valid, then it is submitted to the server PHP program. The PHP will handle the return page
+	
+
+	
+//Funtion: validate()
+//Preconditions: 
+	//The function does not take parameters. The function reads the values in the webpage’s five text boxes for validation.
+//Postconditions: 
+	//If the data submitted in the text boxes is invalid, the function will report the error in an alert box. 
+	//If all values are valid, then the information is sent to the server as a POST request.
+//Description: 
+	//The backbone of the program, validate() checks that the inputted data is valid (though not necessarily correct), 
+	//returning an error alert if not. If all values are valid, the function submits the data to the query-handling server.
+
+function validate() {
+// capture the data provided by the user
+var month = document.raceForm.month.value;  // get month from the form
+var day = document.raceForm.day.value;  // get day from the form
+var year = document.raceForm.year.value;  // get year from the form
+var track = document.raceForm.track.value;  // get track from the form
+var race = document.raceForm.raceNum.value;  // get race from the form
+
+var successful_bool = true;
+// Error check the data
+// Display an alert box and return if an error
+// error box: alert("Invalid starting point");
+// var isnum = /^\d+$/.test(val);.
+// var n = str.length;
+// var res = str.charAt(0);
+
+if (/^\d+$/.test(month)){
+	if (month > 0 && month < 13){
+		successful_bool = false;
+	}
+	else{
+		alert("Month must be 1-12");
+		return false;
+	}
+}
+else{
+	alert("Month must be 1-12");
+	return false;
+}
+if (/^\d+$/.test(day)){
+	if (day > 0 && day < 32){
+		successful_bool = false;
+	}
+	else{
+		alert("Day must be 1-31");
+		return false;
+	}
+}
+else{
+	alert("Day must be 1-31");
+	return false;
+}
+if (/^\d+$/.test(year)){
+	if (year > 2009 && year < 2016){
+		successful_bool = false;
+	}
+	else{
+		alert("Year must be 2010-2015");
+		return false;
+	}
+}
+else{
+	alert("Year must be 2010-2015");
+	return false;
+}
+if (/^\d+$/.test(race)){
+	if (race > 0 && race < 16){
+		successful_bool = false;
+	}
+	else{
+		alert("Race must be 1-15");
+		return false;
+	}
+}
+else{
+	alert("Race must be 1-15");
+	return false;
+}
+
+track_length = track.length;
+
+if (track_length > 1 && track_length < 4){
+
+	if (track_length == 2){
+		if (!(/^[a-zA-Z]+$/.test(track.charAt(0)))){
+			alert("Track must be 2 or 3 alphabetical characters");
+			return false;
+		}
+		else if (!(/^[a-zA-Z]+$/.test(track.charAt(1)))){
+			alert("Track must be 2 or 3 alphabetical characters");
+			return false;
+		}
+		else{
+			successful_bool = false;
+		}
+	}
+	if (track_length == 3){
+		if (!(/^[a-zA-Z]+$/.test(track.charAt(0)))){
+			alert("Track must be 2 or 3 alphabetical characters");
+			return false;
+		}
+		else if (!(/^[a-zA-Z]+$/.test(track.charAt(1)))){
+			alert("Track must be 2 or 3 alphabetical characters");
+			return false;
+		}
+		else if (!(/^[a-zA-Z]+$/.test(track.charAt(2)))){
+			alert("Track must be 2 or 3 alphabetical characters");
+			return false;
+		}
+		else{
+			successful_bool = false;
+		}
+	}
+	
+	track = track.toUpperCase();
+	document.raceForm.track.value = track;
+	
+	year = year.charAt(2) + year.charAt(3);
+	//alert(year);
+	document.raceForm.year.value = year;
+	
+}
+else{
+	alert("Track must be 2 or 3 alphabetical characters");
+	return false;
+}
+
+
+// Only send data to server if made it through all checks
+if(!successful_bool){
+	//alert("This was successful");
+	document.raceForm.submit();
+}
+else{
+	return false;
+}
+
+return true;
+
+} // validate function: validate user input 
+
+
+</script>
+</head>
+<body lang="en-US" dir="ltr" style="background: transparent">
+<h1>Race Track Data Access 
+</h1>
+<form name="raceForm" action="program3.php" method="post">
+	<p><strong>Race Date: <br>Month (1-12): <input type="text" name="month" size="3" >
+	<br>Day (1-31): <input type="text" name="day" size="3" >
+	<br>Year (2010-2015): <input type="text" name="year" size="5" >
+	</strong>
+	</p>
+	<p><strong>Track: (2-3 character track abbreviation): <input type="text" name="track" size="4" >
+	</strong>
+	</p>
+	<p><strong>Number of race (1-15): <input type="text" name="raceNum" size="3" >
+	</strong>
+	</p>
+	<p><strong><input type="button" value="Submit" style="width: 0.85in; height: 0.42in" onclick="validate()">
+	</strong>
+	</p>
+</form>
+</body>
+</html>

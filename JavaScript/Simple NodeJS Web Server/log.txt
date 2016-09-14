@@ -1,0 +1,4 @@
+2015:10:04:20:43:32 GET getresponse.html 200
+2015:10:04:20:43:38 POST xxxx 200
+2015:10:04:20:43:40 GET empty.html 204
+2015:10:04:20:43:41 GET not_found.html 404

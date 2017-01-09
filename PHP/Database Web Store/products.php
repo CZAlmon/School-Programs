@@ -141,9 +141,9 @@ elseif (!isset($_COOKIE[$cookie_name]) && $CookiesEnabled) {
 <?php
 
 //Contains Servername, the username, and the pasword of the MySQL server we will use
-$UK_servername = "delphi.cs.uky.edu";
-$My_username = "czal222";
-$My_password = "u0613596";
+$UK_servername = "";
+$My_username = "";
+$My_password = "";
 
 //connection string
 $connection = new mysqli($UK_servername, $My_username, $My_password);
@@ -154,7 +154,7 @@ if ($connection->connect_error) {
 }
 
 //select database to use
-$connection->select_db("czal222");
+$connection->select_db("");
 
 
 

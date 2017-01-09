@@ -143,7 +143,7 @@ if ($connection->connect_error) {
 }
 
 //select database to use
-$connection->select_db("czal222");
+$connection->select_db("");
 
 
 //    ----Database Data
